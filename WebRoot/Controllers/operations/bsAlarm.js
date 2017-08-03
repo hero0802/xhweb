@@ -46,14 +46,26 @@ xh.load = function() {
 		 * 获取基站告警信息 "../../bslarm/list?bsId=" + bsId + "&name=" + bsName +
 		 * "&dealEn=0" + "&start=0&limit=" + pageSize
 		 */
-		$http.get("../../bsAlarm/list?bsId=" + bsId + "&name=" + bsName
-				+ "&dealEn=0" + "&start=0&limit=" + pageSize).success(
-				function(response) {
-					xh.maskHide();
-					$scope.data = response.data;
-					$scope.totals = response.totals;
-					xh.pagging(1, parseInt($scope.totals), $scope);
-				});
+//		$http.get("../../bsAlarm/list?bsId=" + bsId + "&name=" + bsName
+//				+ "&dealEn=0" + "&start=0&limit=" + pageSize).success(
+//				function(response) {
+//					xh.maskHide();
+//					$scope.data = response.data;
+//					$scope.totals = response.totals;
+//					xh.pagging(1, parseInt($scope.totals), $scope);
+//				});
+		$.post("../../bsAlarm/list",{
+			bsId:bsId,
+			name:bsName,
+			dealEn:0,
+			start:0,
+			limit:pageSize
+		},function(response) {
+			xh.maskHide();
+			$scope.data = response.data;
+			$scope.totals = response.totals;
+			xh.pagging(1, parseInt($scope.totals), $scope);
+		})
 		/* 刷新数据 */
 		$scope.refresh = function() {
 			$scope.search(1);
@@ -78,15 +90,38 @@ xh.load = function() {
 			} else {
 				start = (page - 1) * pageSize;
 			}
+			alert(bsName);
 			xh.maskShow();
-			$http.get("../../bsAlarm/list?bsId=" + bsId + "&name=" + bsName
-					+ "&dealEn="+ dealEn + "&start=0&limit=" + pageSize).success(
-					function(response) {
-						xh.maskHide();
-						$scope.data = response.data;
-						$scope.totals = response.totals;
-						xh.pagging(page, parseInt($scope.totals), $scope);
-					});
+//			$http.post("../../bsAlarm/list",param).success(
+//					function(response) {
+//						xh.maskHide();
+//						$scope.data = response.data;
+//						$scope.totals = response.totals;
+//						xh.pagging(page, parseInt($scope.totals), $scope);
+//					});
+			
+			$.ajax({
+				url : '../../bsAlarm/list',
+				type : 'post',
+				dataType : "json",
+				data : {
+					bsId:bsId,
+					name:bsName,
+					dealEn:dealEn,
+					start:0,
+					limit:pageSize
+				},
+				async : false,
+				success : function(response) {
+					xh.maskHide();
+					$scope.data = response.data;
+					$scope.totals = response.totals;
+					xh.pagging(page, parseInt($scope.totals), $scope);
+				},
+				error : function() {
+					$scope.refresh();
+				}
+			});
 		};
 		/* 确认故障 */
 		$scope.identifyBsAlarm = function(id){
