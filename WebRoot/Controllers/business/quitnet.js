@@ -62,8 +62,8 @@ xh.load = function() {
 			xh.pagging(1, parseInt($scope.totals), $scope);
 		});
 		
-		/*获取主管部门领导列表*/
-		$http.get("../../web/user/getUserList?roleId=10001").
+		/*获取管理房人员列表*/
+		$http.get("../../web/user/getUserList?roleId=10002").
 		success(function(response){
 			$scope.userData_MainManager = response.items;
 			$scope.userTotals_MainManager = response.totals;
