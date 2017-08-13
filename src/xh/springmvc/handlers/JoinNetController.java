@@ -89,7 +89,7 @@ public class JoinNetController {
 		int id = funUtil.StringToInt(request.getParameter("id"));
 		HashMap result = new HashMap();
 		result.put("success", success);
-		result.put("items", JoinNetService.applyProgress(id));
+		result.put("items", .applyProgress(id));
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
 		log.debug(jsonstr);
