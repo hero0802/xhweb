@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>退网申请</title>
+<title>通信保障</title>
 <meta name="keywords" content="keyword1,keyword2,keyword3">
 <meta name="description" content="this is my page">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -46,8 +46,8 @@
 					<div id="hbreadcrumb" class="pull-left">
 						<ol class="hbreadcrumb breadcrumb">
 							<li><span>当前位置：</span></li>
-							<li><span><a href="quitnet.html">业务管理</a></span></li>
-							<li class="active"><span>退网申请</span></li>
+							<li><span><a href="joinnet.html">业务管理</a></span></li>
+							<li class="active"><span>通信保障</span></li>
 						</ol>
 					</div>
 				</div>
@@ -63,8 +63,8 @@
 							<div class="row">
 								<div class="col-md-12">
 									<button class="btn btn-success btn-sm" data-toggle="modal"
-										data-target="#quit" ng-disabled="">
-										<i class="fa fa-plus-circle"></i>&nbsp;申请退网
+										data-target="#add" ng-disabled="">
+										<i class="fa fa-plus-circle"></i>&nbsp;保障申请
 									</button>
 									<!-- <button class="btn btn-info btn-sm" ng-disabled=""
 										ng-click="showEditModel()">
@@ -97,11 +97,11 @@
 								ng-model="loginUser">
 								<thead>
 									<tr class="tr-gray">
-										<th>用户单位</th>
-										<th width="150px">退网终端号码</th>
-										<th width="100px">退网类型</th>
-										<th width="100px">联系人</th>
-										<th width="180px">申请退网时间</th>
+										<th>申请单位</th>
+										<th width="150px">联系人</th>
+										<th width="100px">保障时间</th>
+										<th width="100px">保障区域</th>
+										<th width="180px">申请时间</th>
 										<th width="200px">审核状态</th>
 										<th width="200px">操作详情</th>
 									</tr>
@@ -111,29 +111,38 @@
 										<td colspan="10" class="text-center">没有记录！</td>
 									</tr>
 									<tr ng-repeat="x in data">
-										<td>{{x.quitName}}</td>
-										<td>{{x.id}}</td>
-										<td>{{x.quitType}}</td>
-										<td>{{x.quitPerson}}</td>
-										<td>{{x.quitTime}}</td>
-										<td ng-if="x.quit==-1" class="td-warning">退网错误</td>
-										<td ng-if="x.quit==0" class="td-danger">等待审核</td>
-										<td ng-if="x.quit==1" class="td-danger">正在审核中</td>
-										<td ng-if="x.quit==2" class="td-danger">等待用户确认</td>
-										<td ng-if="x.quit==3" class="td-warning">退网成功</td>
+										<td>{{x.unit}}</td>
+										<td>{{x.person}}</td>
+										<td>{{x.supportTime}}</td>
+										<td>{{x.area}}</td>
+										<td>{{x.time}}</td>
+										<td ng-if="x.checked==-1" class="td-warning">审核被拒绝</td>
+										<td ng-if="x.checked==0" class="td-danger">等待审核</td>
+										<td ng-if="x.checked==1" class="td-danger">正在审核中</td>
+										<td ng-if="x.checked==2" class="td-danger">等待经办人处理</td>
+										<td ng-if="x.checked==3" class="td-danger">等待用户确认</td>
+										<td ng-if="x.checked==4" class="td-warning">确认通过，保障任务完成</td>
 										
-										<td style="text-align:center">
+										<td style="text-align:center">										
+										
 										<a href="#"
 											ng-click="toProgress($index)"><i
 												class="fa fa-file-text-o text-success"> </i>&nbsp;详情</a>
 												
-										<a ng-if="loginUserRoleId==10002 && x.quit==1"
+										<a ng-if="loginUserRoleId==10001 && x.checked==0 || 		
+										loginUserRoleId==10002 && x.checked==1"
 											href="#" ng-click="checkWin($index)"><i
 												class="fa fa-hand-o-down text-danger"></i>| &nbsp;审核</a>
+										<!-- 用户确认 -->
+
+										<!-- <a ng-if="loginUserRoleId==10002 && x.checked=="
+										href="#" ng-click="checkSign($index)"><i class="fa fa-hand-down text-danger"></i>| &nbsp;</a>			
+										 -->
+
 										<a class="text-danger"
-											ng-if="loginUser==x.userName && loginUserRoleId==1000 && x.quit==2"
+											ng-if="loginUser==x.userName && loginUserRoleId==1000 && x.checked==3"
 											href="#" ng-click="checkWin($index)">|<i
-												class="fa fa-hand-o-down text-danger"></i>&nbsp;确认</a>
+												class="fa fa-hand-o-down text-danger"></i>&nbsp;确认</a></td>
 									</tr>
 								</tbody>
 							</table>
@@ -173,15 +182,12 @@
 	<div class="scroll-top text-info animated fadeIn scroll-top-hide">
 		<i class="fa fa-chevron-circle-up fa-3x"></i>
 	</div>
-
-	<!-- 审核 -->
-	<div ng-include="'quitnet-check.html'"></div>
-	<!-- 退网-->
-	<div ng-include="'quitnet-quit.html'"></div>
-	<!-- 进程-->
-	<div ng-include="'quitnet-progress.html'"></div>
-	
-	<div >
+	<!-- 添加 -->
+	<div ng-include="'communicationsupport-add.html'"></div>
+	<!-- 录入 -->
+	<div ng-include="'communicationsupport-check.html'"></div>
+	<!-- 详细 -->
+	<div ng-include="'communicationsupport-progress.html'"></div>
 
 	<script type="text/javascript"
 		src="../../Resources/js/xhbootstrap-js.js"></script>
@@ -190,7 +196,7 @@
 	<script type="text/javascript"
 		src="../../Resources/js/ajaxfileupload.js"></script>
 	<script type="text/javascript"
-		src="../../Controllers/business/quitnet.js"></script>
+		src="../../Controllers/business/communicationsupport.js"></script>
 	<script type="text/javascript">
 		xh.load();
 	</script>

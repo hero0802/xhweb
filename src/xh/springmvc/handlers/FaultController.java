@@ -27,23 +27,23 @@ import xh.func.plugin.FlexJSON;
 import xh.func.plugin.FunUtil;
 import xh.func.plugin.GsonUtil;
 import xh.mybatis.bean.EmailBean;
+import xh.mybatis.bean.FaultBean;
 import xh.mybatis.bean.JoinNetBean;
-import xh.mybatis.bean.QuitNetBean;
 import xh.mybatis.bean.WebLogBean;
 import xh.mybatis.bean.WebUserBean;
 import xh.mybatis.service.EmailService;
+import xh.mybatis.service.FaultService;
 import xh.mybatis.service.JoinNetService;
-import xh.mybatis.service.QuitNetService;
 import xh.mybatis.service.WebLogService;
 import xh.mybatis.service.WebUserServices;
 
 @Controller
-@RequestMapping(value = "/quitnet")
-public class QuitNetController {
+@RequestMapping(value = "/fault")
+public class FaultController {
 	private boolean success;
 	private String message;
 	private FunUtil funUtil = new FunUtil();
-	protected final Log log = LogFactory.getLog(QuitNetController.class);
+	protected final Log log = LogFactory.getLog(FaultController.class);
 	private FlexJSON json = new FlexJSON();
 	private WebLogBean webLogBean = new WebLogBean();
 	
@@ -68,32 +68,13 @@ public class QuitNetController {
 		map.put("limit", limit);
 		map.put("user", user);
 		map.put("roleId", roleId);
-		
+
 		HashMap result = new HashMap();
 		result.put("success", success);
-		result.put("items", QuitNetService.selectAll(map));
-		result.put("totals", QuitNetService.dataCount(map));
+		result.put("items", FaultService.selectAll(map));
+		result.put("totals", FaultService.dataCount(map));
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
-		try {
-			response.getWriter().write(jsonstr);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@RequestMapping(value = "/applyProgress", method = RequestMethod.GET)
-	public void applyProgress(HttpServletRequest request,
-			HttpServletResponse response) {
-		this.success = true;
-		int id = funUtil.StringToInt(request.getParameter("id"));
-		HashMap result = new HashMap();
-		result.put("success", success);
-		result.put("items", QuitNetService.applyProgress(id));
-		response.setContentType("application/json;charset=utf-8");
-		String jsonstr = json.Encode(result);
-		log.debug(jsonstr);
 		try {
 			response.getWriter().write(jsonstr);
 		} catch (IOException e) {
@@ -102,38 +83,58 @@ public class QuitNetController {
 		}
 
 	}
+
+//	@RequestMapping(value = "/applyProgress", method = RequestMethod.GET)
+//	public void applyProgress(HttpServletRequest request,
+//			HttpServletResponse response) {
+//		this.success = true;
+//		int id = funUtil.StringToInt(request.getParameter("id"));
+//		HashMap result = new HashMap();
+//		result.put("success", success);
+//		result.put("items", .applyProgress(id));
+//		response.setContentType("application/json;charset=utf-8");
+//		String jsonstr = json.Encode(result);
+//		log.debug(jsonstr);
+//		try {
+//			response.getWriter().write(jsonstr);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	/**
-	 * 退网申请
+	 * 故障申请
 	 * 
 	 * @param request
 	 * @param response
 	 */
-	@RequestMapping(value = "/quitNet", method = RequestMethod.POST)
-	public void quitNet(HttpServletRequest request,
+	@RequestMapping(value = "/insertFault", method = RequestMethod.POST)
+	public void insertNet(HttpServletRequest request,
 			HttpServletResponse response) {
 		this.success = true;
 		String jsonData = request.getParameter("formData");
 		
-		QuitNetBean bean = GsonUtil.json2Object(jsonData, QuitNetBean.class);
+		FaultBean bean = GsonUtil.json2Object(jsonData, FaultBean.class);
 		bean.setUserName(funUtil.loginUser(request));
-		//bean.setTime(funUtil.nowDate());
+		bean.setTime(funUtil.nowDate());
 		log.info("data==>" + bean.toString());
 		
-		int rst = QuitNetService.quitNet(bean);
+		int rst = FaultService.insertFault(bean);
 		if (rst == 1) {
-			this.message = "退网申请信息已经成功提交";
+			this.message = "故障申请信息已经成功提交";
 			webLogBean.setOperator(funUtil.loginUser(request));
 			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
 			webLogBean.setStyle(1);
-			webLogBean.setContent("退网申请信息，data=" + bean.toString());
+			webLogBean.setContent("故障申请信息，data=" + bean.toString());
 			WebLogService.writeLog(webLogBean);
 			
 			//----发送通知邮件
-			sendNotify(bean.getUser_MainManager(), "退网申请信息已经成功提交,请审核。。。", request);
+			sendNotify(bean.getUser_MainManager(), "故障申请信息已经成功提交,请审核。。。", request);
 			//----END
 		} else {
-			this.message = "退网申请信息提交失败";
+			this.message = "故障申请信息提交失败";
 		}
 		HashMap result = new HashMap();
 		result.put("success", success);
@@ -149,6 +150,7 @@ public class QuitNetController {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * 主管部门审核
 	 * 
@@ -160,25 +162,27 @@ public class QuitNetController {
 			HttpServletResponse response) {
 		this.success = true;
 		int id = funUtil.StringToInt(request.getParameter("id"));
-		int quit = funUtil.StringToInt(request.getParameter("quit"));
+		int checked = funUtil.StringToInt(request.getParameter("checked"));
 		//String note1 = request.getParameter("note1");
 		String user = request.getParameter("user");
-		QuitNetBean bean = new QuitNetBean();
+		FaultBean bean = new FaultBean();
 		bean.setId(id);
-		bean.setQuit(quit);
+		bean.setChecked(checked);
+		bean.setUser1(funUtil.loginUser(request));
+		bean.setTime1(funUtil.nowDate());;
 		log.info("data==>" + bean.toString());
 		
-		int rst = QuitNetService.checkedOne(bean);
+		int rst = FaultService.checkedOne(bean);
 		if (rst == 1) {
 			this.message = "审核提交成功";
 			webLogBean.setOperator(funUtil.loginUser(request));
 			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
 			webLogBean.setStyle(5);
-			webLogBean.setContent("审核退网申请，data=" + bean.toString());
+			webLogBean.setContent("审核故障申请，data=" + bean.toString());
 			WebLogService.writeLog(webLogBean);
 			
 			//----发送通知邮件
-			sendNotify(user, "退网申请信息审核，请管理人审核。。。", request);
+			sendNotify(user, "故障申请信息审核，请管理部门领导审核并移交经办人", request);
 			//----END
 		} else {
 			this.message = "审核提交失败";
@@ -198,51 +202,54 @@ public class QuitNetController {
 		}
 
 	}
+
 	/**
-	 * 下载文件
+	 * 管理方审核
+	 * 
 	 * @param request
 	 * @param response
-	 * @throws Exception
 	 */
-	@RequestMapping(value = "/download", method = RequestMethod.GET)
-	public void downFile(HttpServletRequest request,HttpServletResponse response) throws Exception{
-		String path = request.getSession().getServletContext().getRealPath("/Resources/upload");
-		String fileName=request.getParameter("fileName");
-		fileName = new String(fileName.getBytes("ISO-8859-1"),"UTF-8");
-		String downPath=path+"/"+fileName;
-		log.info(downPath);
-		 File file = new File(downPath);
-		 if(!file.exists()){
-			 this.success=false;
-			 this.message="文件不存在";
-		 }
-		    //设置响应头和客户端保存文件名
-		    response.setCharacterEncoding("utf-8");
-		    response.setContentType("multipart/form-data");
-		    response.setHeader("Content-Disposition", "attachment;fileName=" + DownLoadUtils.getName(request.getHeader("user-agent"), fileName));
-		    //用于记录以完成的下载的数据量，单位是byte
-		    long downloadedLength = 0l;
-		    try {
-		        //打开本地文件流
-		        InputStream inputStream = new FileInputStream(downPath);
-		        //激活下载操作
-		        OutputStream os = response.getOutputStream();
+	@RequestMapping(value = "/checkedTwo", method = RequestMethod.POST)
+	public void checkedTwo(HttpServletRequest request,
+			HttpServletResponse response) {
+		this.success = true;
+		int id = funUtil.StringToInt(request.getParameter("id"));
+		//String note2 = request.getParameter("note2");
+		String user3 = request.getParameter("user");
+		FaultBean bean = new FaultBean();
+		bean.setId(id);
+		bean.setChecked(3);
+		bean.setUser2(funUtil.loginUser(request));
+		bean.setTime2(funUtil.nowDate());
+		int rst = FaultService.checkedTwo(bean);
+		if (rst == 1) {
+			this.message = "通知经办人处理成功";
+			webLogBean.setOperator(funUtil.loginUser(request));
+			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
+			webLogBean.setStyle(5);
+			webLogBean.setContent("通知经办人处理(故障申请)，data=" + bean.toString());
+			WebLogService.writeLog(webLogBean);
+			
+			//----发送通知邮件
+			sendNotify(user3, "故障申请信息审核，请确认。。。", request);
+			//----END
+		} else {
+			this.message = "通知经办人处理失败";
+		}
+		HashMap result = new HashMap();
+		result.put("success", success);
+		result.put("result", rst);
+		result.put("message", message);
+		response.setContentType("application/json;charset=utf-8");
+		String jsonstr = json.Encode(result);
+		log.debug(jsonstr);
+		try {
+			response.getWriter().write(jsonstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		        //循环写入输出流
-		        byte[] b = new byte[2048];
-		        int length;
-		        while ((length = inputStream.read(b)) > 0) {
-		            os.write(b, 0, length);
-		            downloadedLength += b.length;
-		        }
-
-		        // 这里主要关闭。
-		        os.close();
-		        inputStream.close();
-		    } catch (Exception e){
-		        throw e;
-		    }
-		    //存储记录
 	}
 	/**
 	 * 用户确认
@@ -256,9 +263,9 @@ public class QuitNetController {
 		int id = funUtil.StringToInt(request.getParameter("id"));
 		JoinNetBean bean = new JoinNetBean();
 		bean.setId(id);	
-		bean.setTime5(funUtil.nowDate());
-		bean.setChecked(3);
-
+		//bean.setTime5(funUtil.nowDate());
+		bean.setChecked(4);
+		
 		int rst = JoinNetService.sureFile(bean);
 		if (rst == 1) {
 			this.message = "确认成功";
@@ -269,7 +276,7 @@ public class QuitNetController {
 			WebLogService.writeLog(webLogBean);
 			
 			//----发送通知邮件
-			//sendNotify(bean.getUser_MainManager(), "入网申请信息已经成功提交,请审核。。。", request);
+			//sendNotify(bean.getUser_MainManager(), "申请信息已经成功提交,请审核。。。", request);
 			//----END
 		} else {
 			this.message = "确认失败";
@@ -289,7 +296,6 @@ public class QuitNetController {
 		}
 
 	}
-	
 	/**
 	 * 发送邮件
 	 * @param recvUser	邮件接收者
@@ -299,7 +305,7 @@ public class QuitNetController {
 	public void sendNotify(String recvUser,String content,HttpServletRequest request){
 		//----发送通知邮件
 		EmailBean emailBean = new EmailBean();
-		emailBean.setTitle("退网申请");
+		emailBean.setTitle("故障申请");
 		emailBean.setRecvUser(recvUser);
 		emailBean.setSendUser(funUtil.loginUser(request));
 		emailBean.setContent(content);
@@ -307,5 +313,4 @@ public class QuitNetController {
 		EmailService.insertEmail(emailBean);
 		//----END
 	}
-
 }

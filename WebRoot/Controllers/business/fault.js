@@ -54,7 +54,7 @@ xh.load = function() {
 		});
 		
 		/*获取申请记录表*/
-		$http.get("../../quitnet/selectAll?start=0&limit=" + pageSize).
+		$http.get("../../fault/selectAll?start=0&limit=" + pageSize).
 		success(function(response){
 			xh.maskHide();
 			$scope.data = response.items;
@@ -88,7 +88,7 @@ xh.load = function() {
 				
 			});*/
 			$scope.progressData=$scope.editData;
-			$("#quitprogress").modal('show');
+			$("#progress").modal('show');
 	    };
 		/*显示审核窗口*/
 		$scope.checkWin = function (id) {
@@ -105,28 +105,8 @@ xh.load = function() {
 			if($scope.loginUserRoleId==10002 && $scope.checkData.quit==1){
 				$("#checkWin1").modal('show');
 			}
-	    };
-	    /* 用户确认编组方案 
-	    $scope.sureFile = function(id) {
-	    	$.ajax({
-	    		url : '../../net/sureFile',
-	    		type : 'POST',
-	    		dataType : "json",
-	    		async : false,
-	    		data:{id:id},
-	    		success : function(data) {
-	    			if (data.result === 1) {
-	    				toastr.success(data.message, '提示');
-	    				xh.refresh();
 
-	    			} else {
-	    				toastr.error(data.message, '提示');
-	    			}
-	    		},
-	    		error : function(){
-	    		}
-	    	});
-	    };*/
+	    };
 		/* 显示修改model */
 		$scope.editModel = function(id) {
 			$scope.editData = $scope.data[id];
@@ -213,7 +193,7 @@ xh.load = function() {
 				start = (page - 1) * pageSize;
 			}
 			xh.maskShow();
-			$http.get("../../quitnet/selectAll?start=0&limit=" + limit).
+			$http.get("../../fault/selectAll?start=0&limit=" + limit).
 			success(function(response){
 				xh.maskHide();
 				$scope.data = response.items;
@@ -232,7 +212,7 @@ xh.load = function() {
 				start = (page - 1) * pageSize;
 			}
 			xh.maskShow();
-			$http.get("../../quitnet/selectAll?start="+start+"&limit=" + limit).
+			$http.get("../../fault/selectAll?start="+start+"&limit=" + limit).
 			success(function(response){
 				xh.maskHide();
 				$scope.start = (page - 1) * pageSize + 1;
@@ -248,15 +228,14 @@ xh.load = function() {
 				$scope.data = response.items;
 				$scope.totals = response.totals;
 			});
-			
 		};
 	});
-	
 };
-/*申请退网*/
-xh.quit = function() {
+//对应
+/*故障申请*/
+xh.add = function() {
 	$.ajax({
-		url : '../../quitnet/quitNet',
+		url : '../../fault/insertFault',
 		type : 'POST',
 		dataType : "json",
 		async : true,
@@ -264,9 +243,8 @@ xh.quit = function() {
 			formData:xh.serializeJson($("#addForm").serializeArray()) //将表单序列化为JSON对象
 		},
 		success : function(data) {
-
 			if (data.result ==1) {
-				$('#quit').modal('hide');
+				$('#add').modal('hide');
 				xh.refresh();
 				toastr.success(data.message, '提示');
 
@@ -281,7 +259,7 @@ xh.quit = function() {
 /*管理方审核*/
 xh.check1 = function() {
 	$.ajax({
-		url : '../../quitnet/checkedOne',
+		url : '../../fault/checkedOne',
 		type : 'POST',
 		dataType : "json",
 		async : true,
@@ -301,10 +279,11 @@ xh.check1 = function() {
 		}
 	});
 };
-/*用户确认*/
+
+/*经办人处理*/
 xh.check2 = function() {
 	$.ajax({
-		url : '../../quitnet/sureFile',
+		url : '../../fault/checkedTwo',
 		type : 'POST',
 		dataType : "json",
 		async : true,
@@ -324,37 +303,26 @@ xh.check2 = function() {
 		}
 	});
 };
-/*上传文件*/
-xh.upload = function() {
-	if($("input[type='file']").val()==""){
-		toastr.error("你还没选择文件", '提示');
-		return;
-	}
-	xh.maskShow();
-	$.ajaxFileUpload({
-		url : '../../net/upload', //用于文件上传的服务器端请求地址
-		secureuri : false, //是否需要安全协议，一般设置为false
-		fileElementId : 'filePath', //文件上传域的ID
-		dataType : 'json', //返回值类型 一般设置为json
-		type:'POST',
-		success : function(data, status) //服务器成功响应处理函数
-		{
-			//var result=jQuery.parseJSON(data);  
-			console.log(data.filePath)
-			xh.maskHide();
-			if(data.success){
-				$("#uploadResult").html(data.message);
-				$("input[name='result']").val(1);
-				$("input[name='fileName']").val(data.fileName);
-				$("input[name='path']").val(data.filePath);
-			}else{
-				$("#uploadResult").html(data.message);
+/*用户确认*/
+xh.check3 = function() {
+	$.ajax({
+		url : '../../fault/sureFile',
+		type : 'POST',
+		dataType : "json",
+		async : true,
+		data:$("#checkForm3").serializeArray(),
+		success : function(data) {
+
+			if (data.result ==1) {
+				$('#checkWin5').modal('hide');
+				xh.refresh();
+				toastr.success(data.message, '提示');
+
+			} else {
+				toastr.error(data.message, '提示');
 			}
-			
 		},
-		error : function(data, status, e)//服务器响应失败处理函数
-		{
-			alert(e);
+		error : function() {
 		}
 	});
 };
@@ -362,7 +330,7 @@ xh.download=function(){
 	var $scope = angular.element(appElement).scope();
 	var filename=$scope.checkData.fileName;
 	console.log("filename=>"+filename);
-	var downUrl="../../net/download?fileName="+filename;
+	var downUrl="../../fault/download?fileName="+filename;
 	window.open(downUrl,'_self','width=1,height=1,toolbar=no,menubar=no,location=no');
 };
 
@@ -371,8 +339,8 @@ xh.refresh = function() {
 	var $scope = angular.element(appElement).scope();
 	// 调用$scope中的方法
 	$scope.refresh();
-
 };
+
 /* 数据分页 */
 xh.pagging = function(currentPage, totals, $scope) {
 	var pageSize = $("#page-limit").val();
@@ -407,7 +375,6 @@ xh.pagging = function(currentPage, totals, $scope) {
 			}
 		});
 	}
-
 };
 
 /*$http({

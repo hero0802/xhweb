@@ -8,7 +8,7 @@ public class QuitNetBean {
 	private String quitReason;
 	private String quitPerson;
 	private String tel;
-	//指定审核入网申请的主管部门领导
+	//指定审核退网申请的主管部门领导
 	private String user_MainManager;
 	private int quit;
 	private String userName;

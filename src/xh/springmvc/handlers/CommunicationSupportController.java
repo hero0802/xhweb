@@ -27,26 +27,24 @@ import xh.func.plugin.FlexJSON;
 import xh.func.plugin.FunUtil;
 import xh.func.plugin.GsonUtil;
 import xh.mybatis.bean.EmailBean;
-import xh.mybatis.bean.JoinNetBean;
-import xh.mybatis.bean.QuitNetBean;
+import xh.mybatis.bean.CommunicationSupportBean;
 import xh.mybatis.bean.WebLogBean;
 import xh.mybatis.bean.WebUserBean;
 import xh.mybatis.service.EmailService;
-import xh.mybatis.service.JoinNetService;
-import xh.mybatis.service.QuitNetService;
+import xh.mybatis.service.CommunicationSupportService;
 import xh.mybatis.service.WebLogService;
 import xh.mybatis.service.WebUserServices;
 
 @Controller
-@RequestMapping(value = "/quitnet")
-public class QuitNetController {
+@RequestMapping(value = "/support")
+public class CommunicationSupportController {
 	private boolean success;
 	private String message;
 	private FunUtil funUtil = new FunUtil();
-	protected final Log log = LogFactory.getLog(QuitNetController.class);
+	protected final Log log = LogFactory.getLog(JoinNetController.class);
 	private FlexJSON json = new FlexJSON();
 	private WebLogBean webLogBean = new WebLogBean();
-	
+
 	/**
 	 * 查询所有流程
 	 * 
@@ -68,11 +66,11 @@ public class QuitNetController {
 		map.put("limit", limit);
 		map.put("user", user);
 		map.put("roleId", roleId);
-		
+
 		HashMap result = new HashMap();
 		result.put("success", success);
-		result.put("items", QuitNetService.selectAll(map));
-		result.put("totals", QuitNetService.dataCount(map));
+		result.put("items", CommunicationSupportService.selectAll(map));
+		result.put("totals", CommunicationSupportService.dataCount(map));
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
 		try {
@@ -81,8 +79,9 @@ public class QuitNetController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
-	
+
 	@RequestMapping(value = "/applyProgress", method = RequestMethod.GET)
 	public void applyProgress(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -90,7 +89,7 @@ public class QuitNetController {
 		int id = funUtil.StringToInt(request.getParameter("id"));
 		HashMap result = new HashMap();
 		result.put("success", success);
-		result.put("items", QuitNetService.applyProgress(id));
+		result.put("items", CommunicationSupportService.applyProgress(id));
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
 		log.debug(jsonstr);
@@ -104,36 +103,36 @@ public class QuitNetController {
 	}
 
 	/**
-	 * 退网申请
+	 * 保障申请
 	 * 
 	 * @param request
 	 * @param response
 	 */
-	@RequestMapping(value = "/quitNet", method = RequestMethod.POST)
-	public void quitNet(HttpServletRequest request,
+	@RequestMapping(value = "/insertNet", method = RequestMethod.POST)
+	public void insertNet(HttpServletRequest request,
 			HttpServletResponse response) {
 		this.success = true;
 		String jsonData = request.getParameter("formData");
 		
-		QuitNetBean bean = GsonUtil.json2Object(jsonData, QuitNetBean.class);
+		CommunicationSupportBean bean = GsonUtil.json2Object(jsonData, CommunicationSupportBean.class);
 		bean.setUserName(funUtil.loginUser(request));
-		//bean.setTime(funUtil.nowDate());
+		bean.setTime(funUtil.nowDate());
 		log.info("data==>" + bean.toString());
-		
-		int rst = QuitNetService.quitNet(bean);
+
+		int rst = CommunicationSupportService.insertSupport(bean);
 		if (rst == 1) {
-			this.message = "退网申请信息已经成功提交";
+			this.message = "保障申请信息已经成功提交";
 			webLogBean.setOperator(funUtil.loginUser(request));
 			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
 			webLogBean.setStyle(1);
-			webLogBean.setContent("退网申请信息，data=" + bean.toString());
+			webLogBean.setContent("保障申请信息，data=" + bean.toString());
 			WebLogService.writeLog(webLogBean);
 			
 			//----发送通知邮件
-			sendNotify(bean.getUser_MainManager(), "退网申请信息已经成功提交,请审核。。。", request);
+			sendNotify(bean.getUser_MainManager(), "保障申请信息已经成功提交,请审核。。。", request);
 			//----END
 		} else {
-			this.message = "退网申请信息提交失败";
+			this.message = "保障申请信息提交失败";
 		}
 		HashMap result = new HashMap();
 		result.put("success", success);
@@ -148,7 +147,9 @@ public class QuitNetController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
+
 	/**
 	 * 主管部门审核
 	 * 
@@ -160,28 +161,129 @@ public class QuitNetController {
 			HttpServletResponse response) {
 		this.success = true;
 		int id = funUtil.StringToInt(request.getParameter("id"));
-		int quit = funUtil.StringToInt(request.getParameter("quit"));
-		//String note1 = request.getParameter("note1");
+		int checked = funUtil.StringToInt(request.getParameter("checked"));
+		String note1 = request.getParameter("note1");
 		String user = request.getParameter("user");
-		QuitNetBean bean = new QuitNetBean();
+		CommunicationSupportBean bean = new CommunicationSupportBean();
 		bean.setId(id);
-		bean.setQuit(quit);
+		bean.setChecked(checked);
+		bean.setUser1(funUtil.loginUser(request));
+		bean.setTime1(funUtil.nowDate());
+		//bean.setNote1(note1);
 		log.info("data==>" + bean.toString());
-		
-		int rst = QuitNetService.checkedOne(bean);
+
+		int rst = CommunicationSupportService.checkedOne(bean);
 		if (rst == 1) {
 			this.message = "审核提交成功";
 			webLogBean.setOperator(funUtil.loginUser(request));
 			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
 			webLogBean.setStyle(5);
-			webLogBean.setContent("审核退网申请，data=" + bean.toString());
+			webLogBean.setContent("审核保障申请，data=" + bean.toString());
 			WebLogService.writeLog(webLogBean);
 			
 			//----发送通知邮件
-			sendNotify(user, "退网申请信息审核，请管理人审核。。。", request);
+			sendNotify(user, "保障申请信息审核，请管理部门领导审核并移交经办人，上传。。。", request);
 			//----END
 		} else {
 			this.message = "审核提交失败";
+		}
+		HashMap result = new HashMap();
+		result.put("success", success);
+		result.put("result", rst);
+		result.put("message", message);
+		response.setContentType("application/json;charset=utf-8");
+		String jsonstr = json.Encode(result);
+		log.debug(jsonstr);
+		try {
+			response.getWriter().write(jsonstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 经办人审核
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/checkedTwo", method = RequestMethod.POST)
+	public void checkedTwo(HttpServletRequest request,
+			HttpServletResponse response) {
+		this.success = true;
+		int id = funUtil.StringToInt(request.getParameter("id"));
+		String note2 = request.getParameter("note2");
+		String user3 = request.getParameter("user");
+		CommunicationSupportBean bean = new CommunicationSupportBean();
+		bean.setId(id);
+		bean.setChecked(3);
+		bean.setUser2(funUtil.loginUser(request));
+		//bean.setUser3(user3);
+		bean.setTime2(funUtil.nowDate());
+		//bean.setNote2(note2);
+
+		int rst = CommunicationSupportService.checkedTwo(bean);
+		if (rst == 1) {
+			this.message = "通知经办人处理成功";
+			webLogBean.setOperator(funUtil.loginUser(request));
+			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
+			webLogBean.setStyle(5);
+			webLogBean.setContent("通知经办人处理(保障申请)，data=" + bean.toString());
+			WebLogService.writeLog(webLogBean);
+			
+			//----发送通知邮件
+			sendNotify(user3, "保障申请信息审核。。。", request);
+			//----END
+		} else {
+			this.message = "通知经办人处理失败";
+		}
+		HashMap result = new HashMap();
+		result.put("success", success);
+		result.put("result", rst);
+		result.put("message", message);
+		response.setContentType("application/json;charset=utf-8");
+		String jsonstr = json.Encode(result);
+		log.debug(jsonstr);
+		try {
+			response.getWriter().write(jsonstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 用户确认
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = "/sureFile", method = RequestMethod.POST)
+	public void sureFile(HttpServletRequest request,
+			HttpServletResponse response) {
+		this.success = true;
+		int id = funUtil.StringToInt(request.getParameter("id"));
+		CommunicationSupportBean bean = new CommunicationSupportBean();
+		bean.setId(id);	
+		//bean.setTime5(funUtil.nowDate());
+		bean.setChecked(4);
+
+		int rst = CommunicationSupportService.sureFile(bean);
+		if (rst == 1) {
+			this.message = "确认成功";
+			webLogBean.setOperator(funUtil.loginUser(request));
+			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
+			webLogBean.setStyle(5);
+			webLogBean.setContent("确认，data=" + bean.toString());
+			WebLogService.writeLog(webLogBean);
+			
+			//----发送通知邮件
+			//sendNotify(bean.getUser_MainManager(), "保障申请信息已经成功提交,请审核。。。", request);
+			//----END
+		} else {
+			this.message = "确认失败";
 		}
 		HashMap result = new HashMap();
 		result.put("success", success);
@@ -244,51 +346,6 @@ public class QuitNetController {
 		    }
 		    //存储记录
 	}
-	/**
-	 * 用户确认
-	 * @param request
-	 * @param response
-	 */
-	@RequestMapping(value = "/sureFile", method = RequestMethod.POST)
-	public void sureFile(HttpServletRequest request,
-			HttpServletResponse response) {
-		this.success = true;
-		int id = funUtil.StringToInt(request.getParameter("id"));
-		JoinNetBean bean = new JoinNetBean();
-		bean.setId(id);	
-		bean.setTime5(funUtil.nowDate());
-		bean.setChecked(3);
-
-		int rst = JoinNetService.sureFile(bean);
-		if (rst == 1) {
-			this.message = "确认成功";
-			webLogBean.setOperator(funUtil.loginUser(request));
-			webLogBean.setOperatorIp(funUtil.getIpAddr(request));
-			webLogBean.setStyle(5);
-			webLogBean.setContent("确认，data=" + bean.toString());
-			WebLogService.writeLog(webLogBean);
-			
-			//----发送通知邮件
-			//sendNotify(bean.getUser_MainManager(), "入网申请信息已经成功提交,请审核。。。", request);
-			//----END
-		} else {
-			this.message = "确认失败";
-		}
-		HashMap result = new HashMap();
-		result.put("success", success);
-		result.put("result", rst);
-		result.put("message", message);
-		response.setContentType("application/json;charset=utf-8");
-		String jsonstr = json.Encode(result);
-		log.debug(jsonstr);
-		try {
-			response.getWriter().write(jsonstr);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 	
 	/**
 	 * 发送邮件
@@ -299,7 +356,7 @@ public class QuitNetController {
 	public void sendNotify(String recvUser,String content,HttpServletRequest request){
 		//----发送通知邮件
 		EmailBean emailBean = new EmailBean();
-		emailBean.setTitle("退网申请");
+		emailBean.setTitle("保障申请");
 		emailBean.setRecvUser(recvUser);
 		emailBean.setSendUser(funUtil.loginUser(request));
 		emailBean.setContent(content);

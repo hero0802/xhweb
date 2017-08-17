@@ -52,6 +52,10 @@
 		user1=#{user1},time1=#{time1},note1=#{note1},checked=#{checked} where
 		id=#{id}
 	</update>
-	
+	<!--用户确认 -->
+	<update id="sureFile" parameterType="xh.mybatis.bean.QuitNetBean">
+		update xhgmnet_business_quitnet set
+		checked=#{checked} where id=#{id}
+	</update>
 
 </mapper>

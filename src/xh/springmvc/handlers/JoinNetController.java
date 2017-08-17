@@ -89,7 +89,7 @@ public class JoinNetController {
 		int id = funUtil.StringToInt(request.getParameter("id"));
 		HashMap result = new HashMap();
 		result.put("success", success);
-		result.put("items", .applyProgress(id));
+		result.put("items", JoinNetService.applyProgress(id));
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
 		log.debug(jsonstr);
@@ -118,7 +118,7 @@ public class JoinNetController {
 		bean.setUserName(funUtil.loginUser(request));
 		bean.setTime(funUtil.nowDate());
 		log.info("data==>" + bean.toString());
-
+		
 		int rst = JoinNetService.insertNet(bean);
 		if (rst == 1) {
 			this.message = "入网申请信息已经成功提交";
