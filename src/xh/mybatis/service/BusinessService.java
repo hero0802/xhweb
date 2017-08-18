@@ -51,6 +51,42 @@ public class BusinessService {
 		return  list;
 	}
 	/**
+	 * 按资产名称统计
+	 * @return
+	 */
+	public static List<HashMap<String, Object>> allAssetNameCount(){
+		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		AssetInfoMapper mapper=sqlSession.getMapper(AssetInfoMapper.class);
+		List<HashMap<String,Object>> list=new ArrayList<HashMap<String,Object>>();
+		try {
+			list=mapper.allAssetNameCount();
+			sqlSession.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return  list;
+	}
+	/**
+	 * 按资产类型统计
+	 * @return
+	 */
+	public static List<HashMap<String,Integer>>allAssetType(){
+		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		AssetInfoMapper mapper=sqlSession.getMapper(AssetInfoMapper.class);
+		List<HashMap<String,Integer>> list=new ArrayList<HashMap<String,Integer>>();
+		try {
+			list=mapper.allAssetType();
+			sqlSession.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return  list;
+	}
+	/**
 	 * 查询资产记录总数
 	 * @param root
 	 * @return
