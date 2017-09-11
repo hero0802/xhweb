@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>接入用户配置</title>
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<script type="text/javascript"
+	src="../../Resources/js/xhbootstrap-css.js"></script>
+<!--[if lte IE 9]>
+<script src="../../Resources/js/jquery-1.8.3.min.js"></script>
+<script src="../../Resources/js/respond.min.js"></script>
+<script src="../../Resources/js/html5shiv.js"></script>
+<![endif]-->
+</head>
+<body ng-app="app" ng-controller="xhcontroller"
+	class="fixed-navbar fixed-sidebar fixed-footer fixed-small-header">
+	<!-- splash screen-->
+	<div class="splash">
+		<div class="color-line"></div>
+		<div class="splash-title">
+			<h1>系统正在努力加载中，请耐心等待</h1>
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
+		</div>
+	</div>
+	<!-- 头部文件 -->
+	<div ng-include="'../top.html'"></div>
+	<!-- 系统菜单 -->
+	<div ng-include="'../menu/business-menu.html'"></div>
+	<!-- 中间内容体 -->
+	<div id="wrapper">
+		<div class="small-header transition animated fadeIn">
+			<div class="title-panel">
+				<div class="panel-body">
+					<div id="hbreadcrumb" class="pull-left">
+						<ol class="hbreadcrumb breadcrumb">
+							<li><span>当前位置：</span></li>
+							<li><span>业务管理</span></li>
+							<li><span>用户数据管理</span></li>
+							<li><span>用户</span></li>
+							<li class="active"><span>接入用户配置</span></li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content animate-panel">
+			<!-- row -->
+			<div class="row">
+				<!-- 左侧菜单 -->
+				<div class="col-md-2">
+					<div class="hpanel">
+						<div class="panel-body">
+
+							<ul class="mailbox-list">
+							    <li class="active"><a href="access-user.html" target="_self"><i
+										class="fa fa-user text-success"></i> 接入用户</a></li>
+								<li><a href="radiouser.html" target="_self"><i
+										class="fa fa-user"></i> 无线用户</a></li>
+								<li><a href="../../Views/business/radiouserbusiness.html"><i class="fa fa-paper-plane text-warning"></i>
+										业务属性</a></li>
+								<li><a href="../../Views/business/radiouserseria.html"><i class="fa fa-exchange "></i> 互联属性</a></li>
+							</ul>
+							<hr>
+							<ul class="mailbox-list">
+								<li><a href="../../Views/business/radiodispatch.html"><i class="fa fa-plane text-danger"></i>
+										调度用户</a></li>
+								<li><a href="../../Views/business/radiodispatchbusiness.html"><i class="fa fa-bar-chart text-warning"></i>
+										业务属性</a></li>
+								<li><a href="#"><i class="fa fa-users text-info"></i>
+										号段管理</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-10">
+					<div class="hpanel">
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-12">
+								<div class="btn-group" style="padding-top:10px;">
+									<button class="btn btn-success btn-sm" onclick="xh.showAddWin()">
+										<i class="fa fa-plus-circle"></i>&nbsp;新增接入用户
+									</button>
+									
+									</div>
+								</div>
+							</div>
+							
+							<!-- row -->
+							<table id="tb-info" class="xh-table table-hover">
+								<thead>
+									<tr class="tr-gray">
+										<th>用户编号</th>
+										<th>用户名称</th>
+										<th>隶属单位</th>
+										<th>用户IP</th>
+										<th>开户时间</th>
+										<th>有效时间[天]</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-if="totals==0">
+										<td colspan="7" class="text-center">没有记录！</td>
+									</tr>
+									<tr ng-repeat="x in data">
+										<td>{{x.User_id}}</td>
+										<td>{{x.User_Name}}</td>
+										<td>{{x.User_Unit}}</td>
+										<td>{{x.User_Ip}}</td>
+										<td>{{x.User_Reg_Time}}</td>
+										<td>{{x.User_Day_Range}}</td>
+										<td style="width:20px;text-align:center">
+										<a href="#"
+											ng-click="editModel($index)" data-toggle="modal"> <i
+												class="fa fa-eye text-success"></i>&nbsp;查看
+										</a>
+										<a href="#"
+											ng-click="editModel($index)" data-toggle="modal">|<i
+												class="fa fa-edit text-success"></i>&nbsp;修改
+										</a>
+										<a href="#"
+											ng-click="del(x.User_id)" data-toggle="modal">|<i
+												class="fa fa-trash text-success"></i>&nbsp;删除 
+										</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- row/ -->
+	</div>
+	<!-- 中间内容体 /-->
+	<div ng-include="'access-user-edit.html'"></div>
+	<div ng-include="'access-user-ad.html'"></div>
+	<!-- 底部内容体 -->
+	<div ng-include="'../footer.html'"></div>
+	<div class="scroll-top text-info animated fadeIn scroll-top-hide">
+		<i class="fa fa-chevron-circle-up fa-3x"></i>
+	</div>
+	
+	<div class="scroll-top text-info animated fadeIn scroll-top-hide">
+		<i class="fa fa-chevron-circle-up fa-3x"></i>
+	</div>
+	<script type="text/javascript"
+		src="../../Resources/js/xhbootstrap-js.js"></script>
+	<script type="text/javascript"
+		src="../../lib/metisMenu/dist/metisMenu.min.js"></script>
+	<script type="text/javascript"
+		src="../../Controllers/business/access-user.js"></script>
+	<script type="text/javascript">
+		xh.load();
+	</script>
+
+</body>
+</html>

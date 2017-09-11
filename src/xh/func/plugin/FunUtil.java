@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -36,8 +37,8 @@ import xh.org.listeners.SingLoginListener;
 
 
 public class FunUtil {
-	protected final Log log = LogFactory.getLog(FunUtil.class);
-	public String xmlPath() {
+	protected final static Log log = LogFactory.getLog(FunUtil.class);
+	public static String xmlPath() {
 		String str = FunUtil.class.getResource("/conf.xml").getPath();
 		return str;
 	}
@@ -52,6 +53,19 @@ public class FunUtil {
 			log.error(e.getMessage(),e);
 		}
 		return user;
+		
+	}
+	//获取登录用户ID
+	public int loginUserId(HttpServletRequest request){
+		int userId=0;
+		try {
+			userId=StringToInt(SingLoginListener.getLogUserInfoMap().get(request.getSession().getId()).get("userId").toString());
+		} catch (NullPointerException e) {
+			// TODO: handle exception
+			log.info("获取数据异常");
+			log.error(e.getMessage(),e);
+		}
+		return userId;
 		
 	}
 	//设置cookie
@@ -211,10 +225,25 @@ public class FunUtil {
 		writer.flush();
 		writer.close();
 	}
-	public int StringToInt(String str){
+	public static int StringToInt(String str){
 		int value=-1;
 		try {
 			value= Integer.parseInt(str.trim());
+		} catch (NumberFormatException e) {
+			// TODO: handle exception
+			log.info("数字字符串解析失败");
+			log.error(e.getMessage(),e);
+		}catch (NullPointerException e) {
+			// TODO: handle exception
+			log.info("数字字符串为空");
+			log.error(e.getMessage(),e);
+		}
+		return value;
+	}
+	public float StringToFloat(String str){
+		float value=-1;
+		try {
+			value= Float.parseFloat(str.trim());
 		} catch (NumberFormatException e) {
 			// TODO: handle exception
 			log.info("数字字符串解析失败");
@@ -284,6 +313,7 @@ public class FunUtil {
 		}
 		return result;
 	}
+
 	//判断是否为数字字符串
 	public boolean isInteger(String str) {  
         Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  

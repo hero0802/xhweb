@@ -16,15 +16,24 @@
         <result property="role" column="role" javaType="java.lang.String"></result>
     </resultMap>
     <!--软件产业中心用户列表-->
-    <select id="userlist10002"  resultType="map" useCache="true">
+    <!-- <select id="userlist10002"  resultType="map" useCache="true">
      select userId,user,userName from xhgmnet_web_user where userId in(select userId from 
      xhgmnet_web_role_user where roleId=10002)
-    </select>     
-    <!--根据登录用户名,密码查找登录用户-->
+    </select> -->  
+    <!--根据RoleID角色组用户列表-->
+    <select id="userlistByRoleId" parameterType="java.lang.Integer" resultType="map" useCache="true">
+     select userId,user,userName from xhgmnet_web_user where userId in(select userId from 
+     xhgmnet_web_role_user where roleId=#{roleId})
+    </select>    
+   <!-- 
     <select id="selectUserByUserAndPass" parameterType="xh.mybatis.bean.WebUserBean"  resultMap="webUserMap">
      select * from xhgmnet_web_user where user=#{user} and userPass=#{userPass}
-    </select>
-        <!--根据登录用户名查找登录用户-->
+    </select> -->
+    <!--根据登录用户名,密码查找登录用户-->
+    <select id="selectUserByUserAndPass" parameterType="map"  resultType="java.util.HashMap">
+     select * from xhgmnet_web_user where user=#{user} and userPass=#{userPass}
+    </select>    
+    <!--根据登录用户名查找登录用户-->
     <select id="selectUserByUser" parameterType="String" resultMap="webUserMap" useCache="true">
      select a.*,b.roleId from xhgmnet_web_user as a left join xhgmnet_web_role_user as b on
      a.userId=b.userId where user=#{user}
@@ -57,6 +66,28 @@
     <select id="userAllCount" resultType="int" useCache="true">
      select count(*) from xhgmnet_web_user
     </select>
+    <!--判断用户权限是否存在-->
+    <select id="existsUserPower" parameterType="int" resultType="int" useCache="true">
+     select count(userId) from xhgmnet_web_user_action where userId=#{userId}
+    </select>     
+    <!--获取用户权限-->
+    <select id="getUserPower" parameterType="int" resultType="java.util.HashMap" useCache="true">
+     select * from xhgmnet_web_user_action where userId=#{userId}
+    </select> 
+    <!--添加用户权限-->
+    <insert id="addUserPower"  useGeneratedKeys="true" parameterType="xh.mybatis.bean.UserPowerBean">
+     insert into xhgmnet_web_user_action
+     (p_add,p_update,p_delete,p_lock,b_add,b_update,b_delete,b_check)
+     values
+     (#{p_add},#{p_update},#{p_delete},#{p_lock},#{b_add},#{b_update},#{b_delete},#{b_check})
+    </insert>  
+    <!--修改用户权限--> 
+    <update id="updateUserPower" parameterType="xh.mybatis.bean.UserPowerBean">
+     update xhgmnet_web_user_action set
+     p_add=#{p_add},p_update=#{p_update},p_delete=#{p_delete},p_lock=#{p_lock},
+     b_add=#{b_add},b_update=#{b_update},b_delete=#{b_delete},b_check=#{b_check}
+     where userId=#{userId}
+    </update>     
    <!--根据用户ID删除用户-->
     <delete id="deleteByUserId" parameterType="java.util.List">
      delete from xhgmnet_web_user where userId in(

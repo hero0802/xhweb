@@ -1,5 +1,6 @@
 package xh.mybatis.mapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,25 @@ public interface AssetInfoMapper {
 	 * @throws Exception
 	 */
 	public List<AssetInfoBean> assetInfo(Map<String,Object> map)throws Exception;
+	
+	/**
+	 * 按资产状态统计
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String,Integer>>allAssetStatus()throws Exception;
+	/**
+	 * 按资产名称统计
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String,Object>>allAssetNameCount()throws Exception;
+	/**
+	 * 按资产类型统计
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String,Integer>>allAssetType()throws Exception;
 	/**
 	 * 查询资产记录总数
 	 * @return
@@ -54,5 +74,10 @@ public interface AssetInfoMapper {
 	 * wlk
 	 */
 	public int updateStatusByNum(Map<String,Object> map)throws Exception;
+	/**
+	 * 根据序列号批量更新记录表中的状态
+	 * durant
+	 */
+	public int updateStatusByNumAsList(Map<String,Object> map)throws Exception;
 
 }

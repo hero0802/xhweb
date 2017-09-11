@@ -4,8 +4,8 @@
   <!-- redis缓存  LRU FIFO-->
    <!-- <cache eviction="LRU" flushInterval="-1" size="1024" readOnly="true"  
     type="xh.mybatis.tools.MybatisRedisCache"/> -->
-   <cache eviction="FIFO" flushInterval="600000" size="1024"  
-        readOnly="true" /> 
+<!--    <cache eviction="FIFO" flushInterval="600000" size="1024"  
+        readOnly="true" />  -->
 	<!--查询入网申请所有记录 -->
 	<select id="selectAll" parameterType="map" resultType="java.util.HashMap"
 		>
@@ -16,7 +16,7 @@
 		from xhgmnet_business_net as u where 1=1
 		<choose>
 			<when test="roleId &gt;10002 || roleId &lt;10000">
-				and u.userName=#{user}
+				and u.userName=#{user} and checked!=6
 			</when>
 			<otherwise>
 			</otherwise>
@@ -67,6 +67,12 @@
 		time3=#{time3},note3=#{note3},user4=#{user4},checked=#{checked} where
 		id=#{id}
 	</update>
+	<!--上传编组方案 -->
+	<update id="uploadFileGhorNote" parameterType="xh.mybatis.bean.JoinNetBean">
+		update xhgmnet_business_net set fileName_GH=#{fileNameGH},filePath_GH=#{filePathGH},
+		fileName_Note=#{fileNameNote},filePath_Note=#{filePathNote} where
+		id=#{id}
+	</update>
 	<!--审核编组方案 -->
 	<update id="checkFile" parameterType="xh.mybatis.bean.JoinNetBean">
 		update xhgmnet_business_net set
@@ -76,6 +82,12 @@
 	<update id="sureFile" parameterType="xh.mybatis.bean.JoinNetBean">
 		update xhgmnet_business_net set
 		time5=#{time5},checked=#{checked} where id=#{id}
+	</update>
+
+	<!--退网-->
+	<update id="quitNet" parameterType="xh.mybatis.bean.JoinNetBean">
+		update xhgmnet_business_net set
+		checked=#{checked} where id=#{id}
 	</update>
 
 </mapper>

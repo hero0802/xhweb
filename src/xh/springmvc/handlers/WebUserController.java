@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import xh.func.plugin.FlexJSON;
 import xh.func.plugin.FunUtil;
+import xh.func.plugin.GsonUtil;
+import xh.mybatis.bean.BsstationBean;
+import xh.mybatis.bean.UserPowerBean;
 import xh.mybatis.bean.WebLogBean;
 import xh.mybatis.bean.WebUserBean;
 import xh.mybatis.bean.WebUserRoleBean;
@@ -41,17 +44,19 @@ public class WebUserController {
 	
 	
 	/**
-	 * 软件产业中心用户列表
+	 * 根据传入的roleID得到用户列表
 	 * @param request
 	 * @param response
 	 */
-	@RequestMapping("/user/userlist10002")
-	public void userlist10001(HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping("/user/getUserList")
+	public void userlist10002(HttpServletRequest request, HttpServletResponse response){
 		this.success=true;
+		int roleId=funUtil.StringToInt(request.getParameter("roleId"));
+		System.out.println("---------传入的RoleID为：" + roleId);
 		HashMap result = new HashMap();
 		result.put("success", success);
-		result.put("totals",WebUserServices.userlist10002().size());
-		result.put("items", WebUserServices.userlist10002());
+		result.put("totals",WebUserServices.userlistByRoleId(roleId).size());
+		result.put("items", WebUserServices.userlistByRoleId(roleId));
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
 		try {
@@ -62,6 +67,7 @@ public class WebUserController {
 		}
 		
 	}
+	
 	
 	/**
 	 * 用户列表
@@ -286,6 +292,78 @@ public class WebUserController {
 		}else{
 			message="更新用户状态失败";
 		}
+		HashMap result = new HashMap();
+		this.success=true;
+		result.put("message", message);
+		result.put("result", rslt);
+		response.setContentType("application/json;charset=utf-8");
+		String jsonstr = json.Encode(result);
+		try {
+			response.getWriter().write(jsonstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	/**
+	 * 获取用户权限
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="/user/getuserpower",method = RequestMethod.GET)
+	public void getuserpower(HttpServletRequest request, HttpServletResponse response){
+		this.success=true;
+		int userId=funUtil.StringToInt(request.getParameter("userId"));
+		HashMap result = new HashMap();
+		result.put("success", success);
+		result.put("items", WebUserServices.getUserPower(userId));
+		response.setContentType("application/json;charset=utf-8");
+		String jsonstr = json.Encode(result);
+		try {
+			response.getWriter().write(jsonstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	/**
+	 * 设置用户权限
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value="/user/setuserpower",method = RequestMethod.POST)
+	public void setuserpower(HttpServletRequest request, HttpServletResponse response){
+		String jsonData=request.getParameter("formData");
+        UserPowerBean bean=GsonUtil.json2Object(jsonData, UserPowerBean.class);
+        log.info(bean.toString());
+        
+        int rslt=0;
+        if(WebUserServices.existsUserPower(bean.getUserId())>0){
+        	rslt=WebUserServices.updateUserPower(bean);
+        	log.info("count1="+WebUserServices.existsUserPower(bean.getUserId()));
+        }else{
+        	rslt=WebUserServices.addUserPower(bean);
+        	log.info("count2="+WebUserServices.existsUserPower(bean.getUserId()));
+        }
+        if(rslt==1){
+			try {
+				webLogBean.setOperator(funUtil.getCookie(request, funUtil.readXml("web", "cookie_prefix")+"username"));
+				webLogBean.setOperatorIp(funUtil.getIpAddr(request));
+				webLogBean.setStyle(4);
+				webLogBean.setContent("设置用户权限，userId="+bean.getUserId());
+				webLogBean.setCreateTime(funUtil.nowDate());
+				WebLogService.writeLog(webLogBean);
+				message="设置用户权限成功";
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else{
+			message="设置用户权限失败";
+		}		
 		HashMap result = new HashMap();
 		this.success=true;
 		result.put("message", message);

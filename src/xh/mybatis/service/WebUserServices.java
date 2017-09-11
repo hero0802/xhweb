@@ -1,11 +1,13 @@
 package xh.mybatis.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
+import xh.mybatis.bean.UserPowerBean;
 import xh.mybatis.bean.WebUserBean;
 import xh.mybatis.mapper.WebUserMapper;
 import xh.mybatis.tools.DbTools;
@@ -16,12 +18,30 @@ public class WebUserServices {
 	 * 软件产业中心用户列表
 	 * @return
 	 */
-	public static List<Map<String,Object>>userlist10002(){
+//	public static List<Map<String,Object>> userlist10002(){
+//		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+//		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
+//		List<Map<String, Object>> list=new ArrayList<Map<String,Object>>();
+//		try {
+//			list=mapper.userlist10002();
+//			sqlSession.close();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return  list;	
+//	}
+	
+	/**
+	 * 根据RoleID角色组用户列表
+	 * @return
+	 */
+	public static List<Map<String,Object>> userlistByRoleId(Integer roleId) {
 		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
 		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
 		List<Map<String, Object>> list=new ArrayList<Map<String,Object>>();
 		try {
-			list=mapper.userlist10002();
+			list=mapper.userlistByRoleId(roleId);
 			sqlSession.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -34,26 +54,23 @@ public class WebUserServices {
 	 * @param root
 	 * @return
 	 */
-	public static ArrayList<WebUserBean> selectUserByRootAndPass(String root,String userPass){
+	public static Map<String,Object>selectUserByRootAndPass(String root,String userPass){
 		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
 		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
-		WebUserBean bean=new WebUserBean();
-		ArrayList<WebUserBean> list=new ArrayList<WebUserBean>();
-		bean.setUser(root);
-		bean.setUserPass(userPass);
+
+		Map<String,Object> map=new HashMap<String, Object>();
+		Map<String,Object> map2=new HashMap<String, Object>();
+		/*bean.setUser(root);
+		bean.setUserPass(userPass);*/
+		map.put("user", root);map.put("userPass", userPass);
 		try {
-			bean=mapper.selectUserByUserAndPass(bean);
-			//sqlSession.commit();
-			if (bean!=null) {
-				list.add(bean);
-			}
-			
+			map2=mapper.selectUserByUserAndPass(map);
 			sqlSession.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return  list;
+		return  map2;
 		
 		
 	}
@@ -214,5 +231,78 @@ public class WebUserServices {
 		}
 		return result;
 	}
+	/**
+	 * 判断用户权限是否存在
+	 * @param  userId
+	 * @return
+	 */
+	public static int existsUserPower(int userId){
+		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
+		int result=0;
+		try {
+			result=mapper.existsUserPower(userId);		
+			sqlSession.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	/**
+	 * 获取用户权限
+	 * @param userId
+	 * @return
+	 */
+	public static HashMap<String,String> getUserPower(int userId){
+		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
+		HashMap<String,String> map=new HashMap<String, String>();
+		try {
+			map=mapper.getUserPower(userId);		
+			sqlSession.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return map;
+	}
+	/**
+	 *  添加用户权限
+	 * @param bean
+	 * @return
+	 */
+	public static int addUserPower(UserPowerBean bean){
+		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.master);
+		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
+		int result=-1;
+		try {
+			result=mapper.addUserPower(bean);		
+			sqlSession.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	/**
+	 * 修改用户权限
+	 * @param bean
+	 * @return
+	 */
+	public static int updateUserPower(UserPowerBean bean){
+		SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.master);
+		WebUserMapper mapper=sqlSession.getMapper(WebUserMapper.class);
+		int result=-1;
+		try {
+			result=mapper.updateUserPower(bean);		
+			sqlSession.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 
 }

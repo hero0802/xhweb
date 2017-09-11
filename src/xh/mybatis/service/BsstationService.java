@@ -34,6 +34,24 @@ public class BsstationService {
 		}
 		return list;
 	}
+	/**
+	 * 查询基站断站列表
+	 * @return
+	 */
+	public static List<HashMap<String,Object>>bsOfflineList() {
+		SqlSession sqlSession = MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper = sqlSession.getMapper(BsstationMapper.class);
+		List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
+		try {
+			list = mapper.bsOfflineList();
+			sqlSession.close();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
 
 	/**
 	 * 基站总数
@@ -137,6 +155,67 @@ public class BsstationService {
 		}
 		return list;
 	}
+	
+	/**
+	 * 根据所选区域查询所有基站
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> bsByArea(List<String> zone) throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.bsByArea(zone);
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
+	}
+	
+	/**
+	 * 根据所选级别查询所有基站
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> bsByLevel(String level) throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.bsByLevel(level);
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
+	}
+
+	
+	/**
+	 * 查询所有基站区域
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> selectAllArea() throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.selectAllArea();
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
+	}
+	
+	/**
+	 * 查询所有基站级别
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> selectLevel() throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.selectLevel();
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
+	}
 
 	/**
 	 * 查询所有基站信息，用于首页展示
@@ -181,6 +260,49 @@ public class BsstationService {
 		session.commit();
 		session.close();
 		return bsStation;
+	}
+	/**
+	 * 查询首页话务量
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> selectCalllist(String currentMonth) throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.selectCalllist(currentMonth);
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
+	}
+	/**
+	 * 查询首页排队数
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> selectChannel() throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.selectChannel();
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
+	}
+	
+	/**
+	 * 路测数据查询
+	 * @author wlk
+	 * @return
+	 * @throws Exception
+	 */
+	public List<HashMap<String, String>> selectRoadTest() throws Exception{
+		SqlSession session=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.slave);
+		BsstationMapper mapper=session.getMapper(BsstationMapper.class);
+		List<HashMap<String, String>> BsStation=mapper.selectRoadTest();
+	        session.commit();  
+	        session.close();
+	        return BsStation;   
 	}
 
 }
