@@ -44,7 +44,7 @@ public class FaultController {
 	protected final Log log = LogFactory.getLog(FaultController.class);
 	private FlexJSON json = new FlexJSON();
 	private WebLogBean webLogBean = new WebLogBean();
-	
+	private String unit;
 	/**
 	 * 查询所有流程
 	 * 
@@ -71,6 +71,7 @@ public class FaultController {
 		result.put("success", success);
 		result.put("items", FaultService.selectAll(map));
 		result.put("totals", FaultService.dataCount(map));
+
 		response.setContentType("application/json;charset=utf-8");
 		String jsonstr = json.Encode(result);
 		try {
@@ -362,7 +363,6 @@ public class FaultController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	/**
 	 * 用户确认
@@ -379,7 +379,6 @@ public class FaultController {
 		bean.setId(id);	
 		bean.setTime(funUtil.nowDate());
 		bean.setChecked(7);
-		bean.setNote(note);
 		int rst = FaultService.sureFile(bean);
 		if (rst == 1) {
 			this.message = "确认成功";

@@ -205,12 +205,9 @@
 								<div class="cd-timeline-img cd-green"
 									ng-if="progressData.checked>6"></div>
 								<div class="cd-timeline-content">
-									<h2>用户回访</h2>
-									<p>
-										<span>备注：</span><span>{{progressData.note}}</span>
-									</p>
+									<h2>用户确认</h2>
 									<span ng-if="progressData.checked<=6"
-										class="cd-date text-danger">等待用户回访</span> <span
+										class="cd-date text-danger">等待用户确认</span> <span
 										ng-if="progressData.checked>6"
 										class="cd-date text-success font-bold">故障保障完成;
 										时间：{{progressData.time}}</span>
