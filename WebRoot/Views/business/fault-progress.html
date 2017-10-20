@@ -109,7 +109,7 @@
 								<div class="cd-timeline-content">
 									<h2>管理方上传故障请求信息</h2>
 									<a ng-if="progressData.checked>1" href="#" title="点击下载文件"
-											onclick="xh.download(1)" style="color: red">{{progressData.fileName_Request}}</a>
+											onclick="xh.download()" style="color: red">{{progressData.fileName_Request}}</a>
 									<span ng-if="progressData.checked<=1"
 										class="cd-date text-danger">等待管理方上传故障请求信息！</span> <span
 										ng-if="progressData.checked>1"
@@ -149,7 +149,7 @@
 								<div class="cd-timeline-content">
 									<h2>服务提供方上传故障完成信息</h2>
 									<a ng-if="progressData.checked>3" href="#" title="点击下载文件"
-											onclick="xh.download(2)" style="color: red">{{progressData.fileName_Finish}}</a>
+											onclick="xh.download()" style="color: red">{{progressData.fileName_Finish}}</a>
 									<!-- <a ng-if="progressData.checked>=4" href="#" title="点击下载文件"
 											onclick="xh.download()" style="color: red">{{progressData.fileName}}</a> -->
 									<!-- <p>

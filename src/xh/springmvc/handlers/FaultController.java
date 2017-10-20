@@ -219,16 +219,11 @@ public class FaultController {
 			HttpServletResponse response) {
 		this.success = true;
 		int id = funUtil.StringToInt(request.getParameter("id"));
-		int checked = funUtil.StringToInt(request.getParameter("checked"));
 		String note2 = request.getParameter("note2");
 		String user = request.getParameter("user");
 		FaultBean bean = new FaultBean();
 		bean.setId(id);
-		if(checked == 3){
-			bean.setChecked(3);
-		}else if(checked == 1){
-			bean.setChecked(1);
-		}
+		bean.setChecked(3);
 		bean.setUser2(funUtil.loginUser(request));
 		bean.setTime2(funUtil.nowDate());
 		bean.setNote2(note2);
@@ -274,15 +269,9 @@ public class FaultController {
 		int id = funUtil.StringToInt(request.getParameter("id"));
 		String note3 = request.getParameter("note3");
 		String user = request.getParameter("user");
-		int checked = funUtil.StringToInt(request.getParameter("checked"));
 		FaultBean bean = new FaultBean();
 		bean.setId(id);
-		if(checked == 5){
-			bean.setChecked(5);
-		}else if(checked == 3) {
-			bean.setChecked(3);
-
-		}
+		bean.setChecked(5);
 //		bean.setUser3(funUtil.loginUser(request));
 		bean.setTime3(funUtil.nowDate());
 		bean.setNote3(note3);

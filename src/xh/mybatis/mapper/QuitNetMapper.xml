@@ -48,8 +48,8 @@
     <insert id="quitNet" useGeneratedKeys="true" keyProperty="id"
             parameterType="xh.mybatis.bean.QuitNetBean">
 		insert into
-		xhgmnet_business_quitnet(quitName,quitTime,quitType,quitModal,quitReason,quitPerson,quitNumber,tel,userName)
-		values(#{quitName},#{quitTime},#{quitType},#{quitModal},#{quitReason},#{quitPerson},#{quitNumber},#{tel},#{userName})
+		xhgmnet_business_quitnet(quitTime,quitModal,quitReason,quitPerson,tel,userName,quitName)
+		values(#{quitTime},#{quitModal},#{quitReason},#{quitPerson},#{tel},#{userName},#{quitName})
 	</insert>
 
     <!--主管部门审核 -->

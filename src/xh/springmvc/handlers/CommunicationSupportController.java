@@ -160,16 +160,11 @@ public class CommunicationSupportController {
 			HttpServletResponse response) {
 		this.success = true;
 		int id = funUtil.StringToInt(request.getParameter("id"));
-		int checked = funUtil.StringToInt(request.getParameter("checked"));
 		String note1 = request.getParameter("note1");
 		String user = request.getParameter("user");
 		CommunicationSupportBean bean = new CommunicationSupportBean();
 		bean.setId(id);
-		if(checked == 1){
-			bean.setChecked(checked);
-		}else if(checked == -1){
-			bean.setChecked(checked);
-		}
+		bean.setChecked(1);
 		bean.setUser1(funUtil.loginUser(request));
 		bean.setTime1(funUtil.nowDate());
 		bean.setNote1(note1);
@@ -265,16 +260,11 @@ public class CommunicationSupportController {
 							 HttpServletResponse response) {
 		this.success = true;
 		int id = funUtil.StringToInt(request.getParameter("id"));
-		int checked = funUtil.StringToInt(request.getParameter("checked"));
 		String note2 = request.getParameter("note2");
 		CommunicationSupportBean bean = new CommunicationSupportBean();
 		bean.setId(id);
 		//bean.setTime5(funUtil.nowDate());
-		if(checked == 3){
-			bean.setChecked(3);
-		}else if(checked == 1){
-			bean.setChecked(1);
-		}
+		bean.setChecked(3);
 		bean.setTime2(funUtil.nowDate());
 		bean.setNote2(note2);
 		int rst = CommunicationSupportService.checkedThree(bean);
