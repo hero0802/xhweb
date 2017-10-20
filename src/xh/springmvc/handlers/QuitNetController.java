@@ -147,9 +147,11 @@ public class QuitNetController {
 			HttpServletResponse response) {
 		this.success = true;
 		String jsonData = request.getParameter("formData");
+		String str = "电子科大";
 		QuitNetBean bean = GsonUtil.json2Object(jsonData, QuitNetBean.class);
 		bean.setUserName(funUtil.loginUser(request));
 		bean.setQuitTime(funUtil.nowDate());
+		bean.setQuitName(str);
 		log.info("data==>" + bean.toString());
 		
 		int rst = QuitNetService.quitNet(bean);
