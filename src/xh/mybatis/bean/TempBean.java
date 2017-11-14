@@ -2,7 +2,17 @@ package xh.mybatis.bean;
 
 public class TempBean {
 	private String bsId;
+	private String name;
+	
+	
 	private String level;
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public String getBsId() {
 		return bsId;
 	}
