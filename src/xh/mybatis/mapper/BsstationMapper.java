@@ -147,7 +147,7 @@ public interface BsstationMapper {
 	public List<HashMap<String,String>> rectangle(Map<String,Object> map)throws Exception;
 	
 	/**
-	 * 圈选基站总数 dd
+	 * 圈选基站总数 ddd
 	 * @return
 	 * @throws Exception
 	 */

@@ -563,7 +563,7 @@ public class BsstationController {
 	}
 	
 	/**
-	 * 圈选功能查询
+	 * 圈选功能查询ddd
 	 */
 	@RequestMapping("/rectangle")
 	@ResponseBody
