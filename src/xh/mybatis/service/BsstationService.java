@@ -396,7 +396,7 @@ public class BsstationService {
 	}
 	
 	/**
-	 * 圈选基站总数ddd
+	 * 圈选基站总数d
 	 * 
 	 * @return
 	 * @throws Exception
