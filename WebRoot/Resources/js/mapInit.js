@@ -22,12 +22,13 @@ app.controller("map", function($scope, $http) {
 			});
 	/* 级别选择 */
 	var level={
-			"0":{"lat":"30.664979585525476","lng":"104.05377994605959","zoom":"7"},
+			/*"4":{"lat":"30.664979585525476","lng":"104.05377994605959","zoom":"7"},*/
 			"1":{"lat":"30.6670418358257","lng":"104.07508986582853","zoom":"6"},
 			"2":{"lat":"30.819648358042055","lng":"104.08952561793008","zoom":"6"},
-			"3":{"lat":"30.680790171160506","lng":"103.91492175917804","zoom":"5"},
+			"3":{"lat":"30.680790171160506","lng":"103.91492175917804","zoom":"5"}
 	}
 	$scope.levelChoose=function(params){
+		console.log(params);
 		$http.get("bs/map/bsByLevel?level="+params).success(
 				function(response) {
 					var tempData = response.items;					
@@ -70,10 +71,10 @@ app.controller("map", function($scope, $http) {
 			});
 			$http.get("bs/map/bsByArea?zone="+t).success(
 					function(response) {
-						var tempData = response.items;					
+						var tempData = response.items;			
 						var point = new esri.geometry.Point(area[params].lng*1, area[params].lat*1);
 						myMap.centerAndZoom(point,area[params].zoom*1);
-						layerCreate(tempData);	
+						layerCreate(tempData);
 						option.series[0].markPoint.data=baseMark(tempData);
 						option.series[1].markPoint.data=flashMark(tempData);
 						overlay.setOption(option);
@@ -87,8 +88,8 @@ app.controller("map", function($scope, $http) {
 			if(t.length==0){
 				$http.get("bs/map/data").success(
 						function(response) {
-							var tempData = response.items;		
-							layerCreate(tempData);	
+							var tempData = response.items;
+							layerCreate(tempData);
 							option.series[0].markPoint.data=baseMark(tempData);
 							option.series[1].markPoint.data=[];
 							overlay.setOption(option);
@@ -97,8 +98,8 @@ app.controller("map", function($scope, $http) {
 			}else{
 				$http.get("bs/map/bsByArea?zone="+t).success(
 						function(response) {
-							var tempData = response.items;		
-							layerCreate(tempData);	
+							var tempData = response.items;
+							layerCreate(tempData);
 							option.series[0].markPoint.data=baseMark(tempData);
 							option.series[1].markPoint.data=flashMark(tempData);
 							overlay.setOption(option);
@@ -111,7 +112,6 @@ app.controller("map", function($scope, $http) {
 	
 	$scope.test=function(){
 		var t = $scope.top5Calllist;
-		console.log(t);
 		t[0]="";
 		$scope.top5Calllist=t;
 		/*var temp;
@@ -265,6 +265,7 @@ var levelLayer,areaLayer
 var roadtest;
 var areaRings;
 var rectangle;
+var test;
 function floor(data) {
 	var options = {
 		logo : false
@@ -278,9 +279,9 @@ function floor(data) {
 			"http://125.70.9.194:801/services/MapServer/map2d");// 切片服务
 	myMap.addLayer(myTiledMapServiceLayer);// 将底图图层对象添加到地图中
 	
-	var test = new
+	test = new
 	esri.layers.ArcGISDynamicMapServiceLayer("http://125.70.9.194:6080/common/rest/services/YingJiBan/Region/MapServer");//动态服务
-	myMap.addLayer(test);// 将底图图层对象添加到地图中
+	//myMap.addLayer(test);// 将底图图层对象添加到地图中
 	
 	gLayer = new esri.layers.GraphicsLayer({id:"小图标"}); // 创建图形显示图层，图形显示图层专门用于在地图上显示点，线，面图形数据
 	gLayermiddle = new esri.layers.GraphicsLayer({id:"中图标"});// 创建中图标图层
@@ -753,16 +754,18 @@ function init(data,markData) {
 
 				}
 			});
-			$.ajax({
+			/*$.ajax({
 				type : "GET",
 				url : "gonsuncn/oneBsEmh?bsId=" + params.value,
 				dataType : "json",
 				success : function(dataById) {
 					// 动环数据展示
-					console.log(dataById);
+					var data = dataById.items;
+					//console.log(data[0]["017001"]);
+					//$('#temp_0').val(data[0][]);
 
 				}
-			});
+			});*/
 		});
 		//地图加载时执行
 		option = {
@@ -932,6 +935,15 @@ function init(data,markData) {
 				}
 			});
 			
+			$("#testService").click(function() {
+				if ($(this).prop("checked") == true) {
+					myMap.addLayer(test);
+					 
+				} else {
+					myMap.removeLayer(test);
+				}
+			});
+			
 		});
 		
 	});
@@ -1093,4 +1105,4 @@ function tableInterval() {
 	$scope.test();*/
 	
 };
-//temptimer=setInterval("tableInterval()", 2000);//每隔2秒执行一次change函数，相当于table在向上滚动一样
+temptimer=setInterval("tableInterval()", 2000);//每隔2秒执行一次change函数，相当于table在向上滚动一样
