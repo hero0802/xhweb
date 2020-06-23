@@ -36,7 +36,7 @@
 		</if>
 		<!-- <if test="roleId &lt;10000"> and (a.userid=#{user} or a.orderAccount=#{user}) 
 			</if> -->
-		order by a.dispatchtime desc 
+		ORDER BY tag desc,updateTime DESC
 		<if test="start!=null">
 		limit #{start},#{limit}
 		</if>
@@ -103,10 +103,16 @@
 	</update>
 	<!-- 更新拍单记录 -->
 	<update id="updateOrder" parameterType="map">
-		update xhgmnet_operations_fault_task_order set `status`=#{status},endTime=#{time} 
+		update xhgmnet_operations_fault_task_order set `status`=#{status},endTime=#{time} ,auditorName=#{auditorName}
 		<if test="status==3">
-		,auditor=#{auditor}
+		,auditor=#{auditor},auditorName=#{auditorName},tag=0
 		</if>
+		where
+		id=#{id}
+	</update>
+	<!-- 将派单信息置顶 -->
+	<update id="setTop" parameterType="map">
+		update xhgmnet_operations_fault_task_order set updateTime=now(),tag=1
 		where
 		id=#{id}
 	</update>

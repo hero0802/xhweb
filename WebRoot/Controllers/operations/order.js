@@ -253,6 +253,28 @@ xh.load = function() {
                 }
             });
         };
+        $scope.setTop=function(id){
+            $.ajax({
+                url : '../../order/setTop',
+                type : 'POST',
+                dataType : "json",
+                async : true,
+                data:{
+                    id:$scope.data[id].id,
+                },
+                success : function(data) {
+
+                    if (data.success) {
+                        $scope.refresh();
+                        toastr.success("置顶派单成功", '提示');
+                    } else {
+                        toastr.success("置顶失败", '提示');
+                    }
+                },
+                error : function() {
+                }
+            });
+        };
         $scope.updateOrderData=function(){
         	 $.ajax({
                  url : '../../order/updateOrderData',
@@ -366,11 +388,11 @@ xh.load = function() {
 			} else {
 				start = (page - 1) * pageSize;
 			}
-			xh.maskShow();
+			//xh.maskShow();
 			$http.get("../../order/orderlist?start="+start+"&bs="+bs+"&starttime="+starttime+"" +
 					"&copy_user="+copy_user+"&dispatchman="+dispatchman+"&recv_user="+recv_user+"&type="+type+"" +
 					"&endtime="+endtime+"&limit=" + pageSize+"&status="+status).success(function(response) {
-				xh.maskHide();
+				//xh.maskHide();
 				$scope.start = (page - 1) * pageSize + 1;
 				$scope.lastIndex = page * pageSize;
 				if (page == totalPages) {

@@ -170,6 +170,21 @@ public class OrderService {
 			}
 			return count;
 	}
+	//更新基站故障状态记录
+	public static int setTop(Map<String,Object> map){
+			SqlSession sqlSession=MoreDbTools.getSession(MoreDbTools.DataSourceEnvironment.master);
+			OrderMapper mapper=sqlSession.getMapper(OrderMapper.class);
+			int rs=0;
+			try{
+				rs=mapper.setTop(map);
+				sqlSession.commit();
+				sqlSession.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return rs;
+	}
 	
 	//根据流水号查询派单信息
 	public static Map<String, Object> selectBySerialnumber(String serialnumber) {

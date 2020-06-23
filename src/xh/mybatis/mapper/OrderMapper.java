@@ -31,5 +31,7 @@ public interface OrderMapper {
 	
 	//根据流水号查询派单信息
 	public Map<String,Object> selectBySerialnumber(String serialnumber) throws Exception;
+	//派单置顶
+	public int setTop(Map<String,Object> map)throws Exception;
 
 }

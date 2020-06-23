@@ -28,6 +28,8 @@ public class OrderDataBean {
 	private String handlepower;//0:可接单；1：可处理；2：只读
 	private String handleUserid;
 	private String auditorName;
+	private int  tag;
+	private String updateTime;
 	
 	public String getAuditorName() {
 		return auditorName;
@@ -238,6 +240,18 @@ public class OrderDataBean {
 	}
 	public void setLevel(int level) {
 		this.level = level;
+	}
+	public int getTag() {
+		return tag;
+	}
+	public String getUpdateTime() {
+		return updateTime;
+	}
+	public void setTag(int tag) {
+		this.tag = tag;
+	}
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
 	}
 	
 	

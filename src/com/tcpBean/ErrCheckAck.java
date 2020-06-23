@@ -16,6 +16,7 @@ public class ErrCheckAck {
 	private String cmdtype = "errcheckack";
 	private String serialnumber;
 	private String auditor;
+	private String auditorName;
 	private String userid;
 	private String result;
 	public String getCmdtype() {
@@ -51,6 +52,12 @@ public class ErrCheckAck {
 		this.auditor = auditor;
 	}
 
+	public String getAuditorName() {
+		return auditorName;
+	}
+	public void setAuditorName(String auditorName) {
+		this.auditorName = auditorName;
+	}
 	@Override
 	public String toString() {
 		return "ErrCheckAck{" +

@@ -255,8 +255,9 @@ public class OrderController {
 		map.put("status", status);
 		map.put("time", FunUtil.nowDate());
 		map.put("auditor", SingLoginListener.getLogUserMap().get(request.getSession().getId())+"");
+		map.put("auditorName", FunUtil.loginUserInfo(request).get("userName"));
 		map.put("id", id);
-		System.out.println(map);
+		System.out.println("派单更新信息:"+map);
 		
 		int code=OrderService.updateOrder(map);
 		
@@ -265,6 +266,7 @@ public class OrderController {
 		errCheckAck.setSerialnumber(serialnumber);
 		errCheckAck.setUserid(userid);
 		errCheckAck.setAuditor(SingLoginListener.getLogUserMap().get(request.getSession().getId())+"");
+		errCheckAck.setAuditorName(FunUtil.loginUserInfo(request).get("userName").toString());
 		errCheckAck.setResult(status==-1?String.valueOf(status):"0");
 
 		demo.startMessageThread(userid, errCheckAck);
@@ -357,6 +359,23 @@ public class OrderController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+	@RequestMapping(value="/setTop", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> setTop(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		int id=FunUtil.StringToInt(request.getParameter("id"));
+		this.success=true;
+		
+		Map<String,Object> map=new HashMap<String, Object>();
+		map.put("tag", 1);
+	//	map.put("auditor", SingLoginListener.getLogUserMap().get(request.getSession().getId())+"");
+		map.put("id", id);
+		
+		int code=OrderService.setTop(map);
+		HashMap result = new HashMap();
+		result.put("success",success);
+		return result;
 
 	}
 	
